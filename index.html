@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste Swiss Ephemeris</title>
+    <title>Painel Astrológico</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; background: #f8fafc; color: #0f172a; }
+        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f8fafc; color: #0f172a; }
         .card { background: #ffffff; padding: 16px; border: 2px solid #d4af37; border-radius: 10px; max-width: 650px; margin-bottom: 15px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         label { font-size: 11px; font-weight: bold; color: #103b70; display: block; margin-bottom: 2px; }
@@ -54,7 +54,7 @@
                 <option value="0">UTC +0</option>
             </select>
         </div>
-        <button type="button" onclick="executarValidacaoAstro()">CONSULTAR SWISS EPHEMERIS</button>
+        <button type="button" id="btn_calcular">CONSULTAR SWISS EPHEMERIS</button>
     </div>
 
     <div id="v_status" class="status wait">Aguardando envio do formulário...</div>
@@ -73,64 +73,78 @@
     </table>
 
     <script>
-        async function executarValidacaoAstro() {
-            const statusEl = document.getElementById('v_status');
-            const tableBody = document.getElementById('v_table_body');
+        document.getElementById('btn_calcular').onclick = function() {
+            var statusEl = document.getElementById('v_status');
+            var tableBody = document.getElementById('v_table_body');
 
             statusEl.className = "status wait";
             statusEl.innerText = "Consultando a Swiss Ephemeris...";
 
-            const d = document.getElementById('v_date').value;
-            const h = document.getElementById('v_time').value;
-            const f = document.getElementById('v_fuso').value;
-            const lat = document.getElementById('v_lat').value;
-            const lon = document.getElementById('v_lon').value;
+            var d = document.getElementById('v_date').value;
+            var h = document.getElementById('v_time').value;
+            var f = document.getElementById('v_fuso').value;
+            var lat = document.getElementById('v_lat').value;
+            var lon = document.getElementById('v_lon').value;
 
-            const urlFinal = "https://motor-astrologia.vercel.app/api?data=" + d + "&hora=" + h + "&fuso=" + f + "&lat=" + lat + "&lon=" + lon;
+            var url = "https://motor-astrologia.vercel.app/api?data=" + encodeURIComponent(d) + 
+                      "&hora=" + encodeURIComponent(h) + 
+                      "&fuso=" + encodeURIComponent(f) + 
+                      "&lat=" + encodeURIComponent(lat) + 
+                      "&lon=" + encodeURIComponent(lon);
 
-            try {
-                const res = await fetch(urlFinal);
+            var req = new XMLHttpRequest();
+            req.open("GET", url, true);
 
-                if (res.ok) {
-                    const data = await res.json();
-                    statusEl.className = "status success";
-                    statusEl.innerText = "CÁLCULO CONCLUÍDO COM SUCESSO!";
+            req.onload = function() {
+                if (req.status >= 200 && req.status < 400) {
+                    try {
+                        var data = JSON.parse(req.responseText);
+                        statusEl.className = "status success";
+                        statusEl.innerText = "CÁLCULO CONCLUÍDO COM SUCESSO!";
 
-                    const mapaPontos = [
-                        { key: "Ascendente", label: "Ascendente (ASC)" },
-                        { key: "MC", label: "Meio do Céu (MC)" },
-                        { key: "Sol", label: "Sol" },
-                        { key: "Lua", label: "Lua" },
-                        { key: "Mercúrio", label: "Mercúrio" },
-                        { key: "Vênus", label: "Vênus" },
-                        { key: "Marte", label: "Marte" },
-                        { key: "Júpiter", label: "Júpiter" },
-                        { key: "Saturno", label: "Saturno" },
-                        { key: "Nodo_Norte", label: "Nodo Norte" },
-                        { key: "Sizigia", label: "Sizígia Pré-Natal" }
-                    ];
+                        var mapaPontos = [
+                            { key: "Ascendente", label: "Ascendente (ASC)" },
+                            { key: "MC", label: "Meio do Céu (MC)" },
+                            { key: "Sol", label: "Sol" },
+                            { key: "Lua", label: "Lua" },
+                            { key: "Mercúrio", label: "Mercúrio" },
+                            { key: "Vênus", label: "Vênus" },
+                            { key: "Marte", label: "Marte" },
+                            { key: "Júpiter", label: "Júpiter" },
+                            { key: "Saturno", label: "Saturno" },
+                            { key: "Nodo_Norte", label: "Nodo Norte" }
+                        ];
 
-                    let rows = "";
-                    mapaPontos.forEach(p => {
-                        const item = data[p.key];
-                        if (item) {
-                            rows += `<tr>
-                                <td style="color:#103b70;">${p.label}</td>
-                                <td>${item.signo}</td>
-                                <td>${item.grau}° ${item.minuto}′ ${item.retrogrado ? '(R)' : ''}</td>
-                            </tr>`;
+                        var rows = "";
+                        for (var i = 0; i < mapaPontos.length; i++) {
+                            var p = mapaPontos[i];
+                            var item = data[p.key];
+                            if (item) {
+                                rows += "<tr>" +
+                                    "<td style='color:#103b70;'>" + p.label + "</td>" +
+                                    "<td>" + item.signo + "</td>" +
+                                    "<td>" + item.grau + "° " + item.minuto + "′ " + (item.retrogrado ? '(R)' : '') + "</td>" +
+                                "</tr>";
+                            }
                         }
-                    });
-                    tableBody.innerHTML = rows;
+                        tableBody.innerHTML = rows;
+                    } catch(e) {
+                        statusEl.className = "status error";
+                        statusEl.innerText = "Erro ao processar os dados recebidos.";
+                    }
                 } else {
                     statusEl.className = "status error";
-                    statusEl.innerText = "Erro no servidor: HTTP " + res.status;
+                    statusEl.innerText = "Erro no servidor: HTTP " + req.status;
                 }
-            } catch (err) {
+            };
+
+            req.onerror = function() {
                 statusEl.className = "status error";
-                statusEl.innerText = "Erro de conexão: " + err.message;
-            }
-        }
+                statusEl.innerText = "Erro de conexão com o servidor.";
+            };
+
+            req.send();
+        };
     </script>
 
 </body>
