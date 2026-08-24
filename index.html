@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Swiss Ephemeris</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; background: #f8fafc; color: #0f172a; }
+        .card { background: #ffffff; padding: 16px; border: 2px solid #d4af37; border-radius: 10px; max-width: 650px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        label { font-size: 11px; font-weight: bold; color: #103b70; display: block; margin-bottom: 2px; }
+        input, select { width: 100%; height: 36px; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 0 8px; font-size: 13px; box-sizing: border-box; }
+        button { width: 100%; height: 40px; font-weight: bold; background: #103b70; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .status { padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 12px; max-width: 650px; }
+        .wait { background: #e2e8f0; color: #475569; }
+        .success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        table { width: 100%; max-width: 650px; border-collapse: collapse; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        th { background: #103b70; color: #ffffff; text-align: left; padding: 8px; font-size: 11px; text-transform: uppercase; }
+        td { padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <h3 style="color: #103b70;">Painel de Validação - Swiss Ephemeris</h3>
+
+    <div class="card">
+        <div class="grid">
+            <div>
+                <label>Data de Nascimento:</label>
+                <input type="text" id="v_date" value="1989-10-09">
+            </div>
+            <div>
+                <label>Hora de Nascimento:</label>
+                <input type="text" id="v_time" value="10:59">
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <label>Latitude (°):</label>
+                <input type="text" id="v_lat" value="-23.5505">
+            </div>
+            <div>
+                <label>Longitude (°):</label>
+                <input type="text" id="v_lon" value="-46.6333">
+            </div>
+        </div>
+        <div style="margin-bottom: 5px;">
+            <label>Fuso Horário (UTC):</label>
+            <select id="v_fuso">
+                <option value="-3" selected>UTC -3 (Brasil / Brasília)</option>
+                <option value="-4">UTC -4</option>
+                <option value="-5">UTC -5</option>
+                <option value="0">UTC +0</option>
+            </select>
+        </div>
+        <button type="button" onclick="executarValidacaoAstro()">CONSULTAR SWISS EPHEMERIS</button>
+    </div>
+
+    <div id="v_status" class="status wait">Aguardando envio do formulário...</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ponto / Planeta</th>
+                <th>Signo</th>
+                <th>Grau / Minuto</th>
+            </tr>
+        </thead>
+        <tbody id="v_table_body">
+            <tr><td colspan="3" style="text-align: center; color: #94a3b8;">Nenhum cálculo realizado.</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        async function executarValidacaoAstro() {
+            const statusEl = document.getElementById('v_status');
+            const tableBody = document.getElementById('v_table_body');
+
+            statusEl.className = "status wait";
+            statusEl.innerText = "Consultando a Swiss Ephemeris...";
+
+            const d = document.getElementById('v_date').value;
+            const h = document.getElementById('v_time').value;
+            const f = document.getElementById('v_fuso').value;
+            const lat = document.getElementById('v_lat').value;
+            const lon = document.getElementById('v_lon').value;
+
+            const urlFinal = "https://motor-astrologia.vercel.app/api?data=" + d + "&hora=" + h + "&fuso=" + f + "&lat=" + lat + "&lon=" + lon;
+
+            try {
+                const res = await fetch(urlFinal);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    statusEl.className = "status success";
+                    statusEl.innerText = "CÁLCULO CONCLUÍDO COM SUCESSO!";
+
+                    const mapaPontos = [
+                        { key: "Ascendente", label: "Ascendente (ASC)" },
+                        { key: "MC", label: "Meio do Céu (MC)" },
+                        { key: "Sol", label: "Sol" },
+                        { key: "Lua", label: "Lua" },
+                        { key: "Mercúrio", label: "Mercúrio" },
+                        { key: "Vênus", label: "Vênus" },
+                        { key: "Marte", label: "Marte" },
+                        { key: "Júpiter", label: "Júpiter" },
+                        { key: "Saturno", label: "Saturno" },
+                        { key: "Nodo_Norte", label: "Nodo Norte" },
+                        { key: "Sizigia", label: "Sizígia Pré-Natal" }
+                    ];
+
+                    let rows = "";
+                    mapaPontos.forEach(p => {
+                        const item = data[p.key];
+                        if (item) {
+                            rows += `<tr>
+                                <td style="color:#103b70;">${p.label}</td>
+                                <td>${item.signo}</td>
+                                <td>${item.grau}° ${item.minuto}′ ${item.retrogrado ? '(R)' : ''}</td>
+                            </tr>`;
+                        }
+                    });
+                    tableBody.innerHTML = rows;
+                } else {
+                    statusEl.className = "status error";
+                    statusEl.innerText = "Erro no servidor: HTTP " + res.status;
+                }
+            } catch (err) {
+                statusEl.className = "status error";
+                statusEl.innerText = "Erro de conexão: " + err.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
