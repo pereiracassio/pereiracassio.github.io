@@ -12,6 +12,7 @@ Site e blog de psicanálise em `https://pereiracassio.github.io` (GitHub Pages).
 - Visual: fundo branco, cabeçalho preto, roxo (`--roxo` `#4b2a7b`) como destaque. Fontes **Fraunces** (títulos) e **Karla** (texto), escolhidas por ele (03 de quatro opções). Nada de traço/sublinhado enfeitando o título (ele detestou o que veio do Blogger).
 - **REGRA DE PADRÃO (19/10/2026): títulos E subtítulos de página/texto são sempre ROXO** (`var(--roxo)`): `h1.pagina`, `.texto h2`, `.texto h3`, `.blog-h2`. Toda página nova segue isso, sem exceção. Texto corrido fica preto.
 - **Favicon:** o divã do logo do canal de YouTube "Divã Pop" (só o desenho, sem o texto, que não se lê em 16px), traço roxo-claro sobre fundo escuro arredondado (`favicon.png` 512, `favicon-32.png`, `favicon-48.png`, `favicon.ico`, `apple-touch-icon.png`). Todas as páginas e o `api/_blog.js` apontam para eles com `?v=1`. O logo "Divã Pop" é definitivo (o canal é de psicanálise em linguagem popular, também para o público gay). Não foi preciso SVG.
+- **Logo no cabeçalho:** `logo-diva-pop.png` (divã + "Divã Pop" em roxo claro, fundo transparente) no canto esquerdo em tela larga (≥860px) e centralizado acima do nome no celular (`.logo-cab` em `style.css`). Está no cabeçalho de todas as páginas e de `api/_blog.js`; página nova copia o mesmo bloco `<a class="logo-cab">`.
 - O nome do projeto é "Cássio Pereira, Psicanalista Clínico". O cabeçalho do Blogger tinha uma foto e o desenho do divã ("Divã Pop"); ainda não foram trazidos (as imagens estão no Blogger e daqui não dá para baixá-las).
 
 ## Páginas

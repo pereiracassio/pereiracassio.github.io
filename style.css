@@ -156,3 +156,11 @@ h1.pagina {
 .assunto { font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; border: 1px solid var(--roxo); border-radius: 20px; padding: 4px 14px; }
 .assunto:hover { background: var(--roxo); color: #ffffff; }
 .assunto-post { display: block; margin: 0 0 6px; font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; font-weight: 700; }
+
+/* Logo do canal no cabeçalho: centralizado no celular, no canto esquerdo em tela larga */
+header { position: relative; }
+.logo-cab { display: block; width: 130px; margin: 0 auto 14px; }
+.logo-cab img { display: block; width: 100%; height: auto; }
+@media (min-width: 860px) {
+    .logo-cab { position: absolute; left: max(24px, calc((100% - 1100px) / 2)); top: 50%; transform: translateY(-50%); width: 170px; margin: 0; }
+}
