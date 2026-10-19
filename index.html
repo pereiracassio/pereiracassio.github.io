@@ -8,100 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fundo: #ffffff;
-            --texto: #1a1410;
-            --roxo: #4b2a7b;
-            --roxo-claro: #7a55b3;
-            --escuro: #16151a;
-            --linha: #d9d2e6;
-        }
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            background: var(--fundo);
-            color: var(--texto);
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: 20px;
-            line-height: 1.6;
-        }
-        header {
-            background: var(--escuro);
-            color: #ffffff;
-            text-align: center;
-            padding: 48px 16px 40px;
-        }
-        header h1 {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: clamp(26px, 5vw, 44px);
-            letter-spacing: 0.04em;
-            margin: 0 0 8px;
-        }
-        header p {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(16px, 3vw, 24px);
-            letter-spacing: 0.06em;
-            margin: 0;
-            color: #cdbfe6;
-        }
-        nav {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px 28px;
-            padding: 18px 16px;
-            border-bottom: 1px solid var(--linha);
-        }
-        nav a {
-            font-family: 'Cinzel', serif;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--roxo);
-            text-decoration: none;
-        }
-        nav a:hover { color: var(--roxo-claro); }
-        main {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 40px 16px 64px;
-        }
-        h2 {
-            font-family: 'Cinzel', serif;
-            font-weight: 500;
-            font-size: 18px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin: 0 0 20px;
-        }
-        .postagens {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
-        .postagem {
-            border: 1px solid var(--linha);
-            border-radius: 6px;
-            padding: 18px;
-        }
-        .postagem h3 {
-            font-family: 'Cinzel', serif;
-            font-weight: 500;
-            font-size: 18px;
-            margin: 0;
-            color: var(--roxo);
-        }
-        footer {
-            text-align: center;
-            padding: 24px 16px 40px;
-            border-top: 1px solid var(--linha);
-            font-size: 16px;
-            color: #5b5468;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
 
@@ -113,7 +20,7 @@
     <nav>
         <a href="index.html">Página inicial</a>
         <a href="#">Quem sou eu</a>
-        <a href="#">Sessões de psicanálise</a>
+        <a href="sessoes.html">Sessões de psicanálise</a>
     </nav>
 
     <main>
