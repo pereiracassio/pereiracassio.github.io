@@ -44,8 +44,8 @@ module.exports = async (req, res) => {
     const jwt = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
     if (!(await souAdmin(jwt))) { res.status(401).json({ erro: 'só o administrador' }); return; }
 
-    const resp = await fetch(SUPABASE_URL + '/rest/v1/psicanalise_posts?publicado=eq.true&select=*&order=publicado_em.desc', { headers: { apikey: SUPABASE_ANON } });
-    if (!resp.ok) throw new Error('Supabase: ' + resp.status);
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/psicanalise_posts?publicado=eq.true&select=*&order=publicado_em.desc', { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + jwt } });
+    if (!resp.ok) throw new Error('Supabase: ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
     const posts = (await resp.json()).filter((p) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(p.slug));
     const assuntos = agruparAssuntos(posts);
     const arquivos = { 'sitemap.xml': sitemap(posts, assuntos) };
