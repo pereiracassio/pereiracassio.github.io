@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cássio Pereira | Psicanalista Clínico</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+
+    <header>
+        <h1>Cássio Pereira</h1>
+        <p>Psicanalista Clínico</p>
+    </header>
+
+    <nav>
+        <a href="index.html">Página inicial</a>
+        <a href="quem-sou-eu.html">Quem sou eu</a>
+        <a href="sessoes.html">Sessões de psicanálise</a>
+    </nav>
+
+    <main class="texto" id="post"><p>Carregando...</p></main>
+
+    <footer>
+        Cássio Pereira · Psicanalista Clínico
+    </footer>
+
+    <script src="blog.js?v=1"></script>
+    <script>
+    (function () {
+        var b = window.blog, main = document.getElementById('post');
+        var slug = new URLSearchParams(location.search).get('p') || '';
+        function naoAchei() { main.textContent = ''; main.appendChild(b.el('p', { text: 'Texto não encontrado.' })); main.appendChild(b.el('a', { class: 'blog-voltar', href: 'index.html', text: '← Ver todos os textos' })); }
+        if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) { naoAchei(); return; }
+        b.buscar('slug=eq.' + slug + '&publicado=eq.true&select=*').then(function (r) {
+            var p = r[0]; if (!p) { naoAchei(); return; }
+            document.title = p.titulo + ' | Cássio Pereira';
+            main.textContent = '';
+            main.appendChild(b.el('h1', { class: 'pagina', text: p.titulo }));
+            if (p.publicado_em) main.appendChild(b.el('p', { class: 'blog-data', text: b.dataExtenso(p.publicado_em) }));
+            if (p.imagem_url) main.appendChild(b.el('img', { class: 'blog-capa', src: p.imagem_url, alt: p.titulo }));
+            main.appendChild(b.renderizarCorpo(p.corpo));
+            main.appendChild(b.renderizarVideo(p.video_url));
+            main.appendChild(b.el('div', { class: 'blog-fim' }, [b.el('a', { class: 'blog-botao', href: 'sessoes.html', text: 'Sessões de psicanálise' })]));
+            main.appendChild(b.el('a', { class: 'blog-voltar', href: 'index.html', text: '← Ver todos os textos' }));
+        }).catch(naoAchei);
+    })();
+    </script>
+</body>
+</html>

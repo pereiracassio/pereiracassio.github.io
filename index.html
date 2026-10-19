@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -25,19 +25,14 @@
 
     <main>
         <h2>Últimas postagens</h2>
-        <div class="postagens">
-            <article class="postagem">
-                <h3>Narcisismo não é o que você pensa</h3>
-            </article>
-            <article class="postagem">
-                <h3>Como a psicanálise pode te ajudar</h3>
-            </article>
-        </div>
+        <div class="postagens" id="postagens"><p>Carregando...</p></div>
     </main>
 
     <footer>
         Cássio Pereira · Psicanalista Clínico
     </footer>
 
+    <script src="blog.js?v=1"></script>
+    <script>blog.listarPostagens(document.getElementById('postagens'));</script>
 </body>
 </html>

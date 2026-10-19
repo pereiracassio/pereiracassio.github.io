@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página não encontrada | Cássio Pereira</title>
+    <meta name="robots" content="noindex">
+    <script>
+    /* postagem nova que ainda não tem página própria: abre pelo leitor direto */
+    (function () {
+        var m = /^\/blog\/([a-z0-9-]+)\.html$/.exec(location.pathname);
+        if (m) location.replace('/postagem.html?p=' + m[1]);
+    })();
+    </script>
+    <style>body{font-family:Georgia,serif;text-align:center;padding:60px 16px;color:#1a1410}a{color:#4b2a7b}</style>
+</head>
+<body>
+    <h1>Página não encontrada</h1>
+    <p><a href="/index.html">Ir para a página inicial</a></p>
+</body>
+</html>

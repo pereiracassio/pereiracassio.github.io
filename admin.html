@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do blog | Cássio Pereira</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3">
+    <style>
+        .painel input, .painel textarea { width: 100%; font: inherit; padding: 10px; margin: 0 0 12px; border: 1px solid var(--roxo); border-radius: 6px; background: #fff; color: var(--texto); }
+        .painel textarea { min-height: 260px; }
+        .painel label { display: block; font-family: 'Cinzel', serif; font-size: 14px; margin: 0 0 4px; }
+        .painel button { font-family: 'Cinzel', serif; font-size: 14px; padding: 10px 16px; margin: 0 8px 8px 0; border: 1px solid var(--roxo); border-radius: 6px; background: var(--roxo); color: #fff; cursor: pointer; }
+        .painel button.sec { background: transparent; color: var(--roxo); }
+        .painel button.perigo { background: transparent; color: #a03e25; border-color: #a03e25; }
+        .painel button:disabled { opacity: .5; }
+        .painel .item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--linha); }
+        .painel .msg { min-height: 1.4em; margin: 0 0 10px; }
+        .painel .msg.erro { color: #a03e25; }
+        .painel .msg.ok { color: #2d6a3a; }
+        .painel .previa { display: none; width: 100%; max-width: 420px; border-radius: 6px; margin: 0 0 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cássio Pereira</h1>
+        <p>Painel do blog</p>
+    </header>
+    <main class="texto painel" id="app"></main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script>
+    (function () {
+        var SUPABASE_URL = 'https://wqkgsotfwkzjwaowenrb.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_p9Un5Po0_3kriGmSwOXIFQ_K8BCMLtt';
+        /* servidor que gera as páginas das postagens (Vercel) */
+        var GERAR_URL = 'https://SUBSTITUA-PELO-SEU-PROJETO.vercel.app/api/blog-publicar';
+        var LARGURA = 1600;
+        var C = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        var app = document.getElementById('app');
+
+        function el(tag, attrs, filhos) {
+            var e = document.createElement(tag);
+            Object.keys(attrs || {}).forEach(function (k) {
+                if (k === 'text') e.textContent = attrs[k]; else if (k === 'class') e.className = attrs[k]; else e.setAttribute(k, attrs[k]);
+            });
+            (filhos || []).forEach(function (f) { if (f) e.appendChild(f); });
+            return e;
+        }
+        function msg(p, texto, tipo) { p.textContent = texto || ''; p.className = 'msg' + (tipo ? ' ' + tipo : ''); }
+        function limpar() { app.textContent = ''; }
+        function slugDe(t) { return (String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/, '')) || 'texto'; }
+        function caminhoDe(url) { var i = String(url || '').indexOf('/object/public/site/'); return i >= 0 ? decodeURIComponent(String(url).slice(i + '/object/public/site/'.length).split('?')[0]) : null; }
+        function erroTexto(e) { return /Invalid login/i.test(e.message || '') ? 'E-mail ou senha incorretos.' : (e.message || 'Erro inesperado.'); }
+        function dataBR(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('pt-BR'); }
+
+        function sair() { C.auth.signOut().then(login); }
+        function topo() {
+            var b = el('button', { type: 'button', class: 'sec', text: 'Sair' }); b.addEventListener('click', sair);
+            return el('div', {}, [b, el('a', { href: 'index.html', text: 'Ver o site' })]);
+        }
+
+        function login() {
+            limpar();
+            var m = el('p', { class: 'msg' });
+            var email = el('input', { type: 'email', id: 'em', autocomplete: 'username', required: '' });
+            var senha = el('input', { type: 'password', id: 'se', autocomplete: 'current-password', required: '' });
+            var entrar = el('button', { type: 'submit', text: 'Entrar' });
+            var form = el('form', {}, [el('label', { for: 'em', text: 'E-mail' }), email, el('label', { for: 'se', text: 'Senha' }), senha, m, entrar]);
+            form.addEventListener('submit', function (ev) {
+                ev.preventDefault(); entrar.disabled = true; msg(m, 'Entrando...');
+                C.auth.signInWithPassword({ email: email.value.trim(), password: senha.value }).then(function (r) {
+                    if (r.error) { entrar.disabled = false; msg(m, erroTexto(r.error), 'erro'); return; }
+                    iniciar();
+                });
+            });
+            app.appendChild(form);
+        }
+
+        function iniciar() {
+            limpar();
+            C.rpc('sou_admin').then(function (r) {
+                if (r.error || r.data !== true) {
+                    app.appendChild(topo()); app.appendChild(el('p', { text: 'Este e-mail não tem acesso ao painel.' })); return;
+                }
+                lista();
+            });
+        }
+
+        /* reduz a imagem (mantém a proporção) e salva em JPEG */
+        function prepararImagem(arquivo) {
+            return new Promise(function (ok, erro) {
+                var url = URL.createObjectURL(arquivo), img = new Image();
+                img.onload = function () {
+                    var f = Math.min(1, LARGURA / img.naturalWidth), w = Math.round(img.naturalWidth * f), h = Math.round(img.naturalHeight * f);
+                    var c = document.createElement('canvas'); c.width = w; c.height = h;
+                    var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+                    URL.revokeObjectURL(url);
+                    c.toBlob(function (blob) { blob ? ok(blob) : erro(new Error('imagem')); }, 'image/jpeg', 0.85);
+                };
+                img.onerror = function () { URL.revokeObjectURL(url); erro(new Error('imagem')); };
+                img.src = url;
+            });
+        }
+
+        function gerarPaginas() {
+            return C.auth.getSession().then(function (r) {
+                var jwt = r.data && r.data.session && r.data.session.access_token;
+                return fetch(GERAR_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + jwt } });
+            }).then(function (resp) { return resp.ok; }).catch(function () { return false; });
+        }
+
+        function lista(aviso) {
+            limpar(); app.appendChild(topo());
+            app.appendChild(el('h2', { class: 'blog-h2', text: 'Postagens' }));
+            var m = el('p', { class: 'msg' }); app.appendChild(m);
+            if (aviso) msg(m, aviso, 'ok');
+            var nova = el('button', { type: 'button', text: 'Nova postagem' }); nova.addEventListener('click', function () { editor(null); });
+            var atualizar = el('button', { type: 'button', class: 'sec', text: 'Atualizar as páginas do blog' });
+            atualizar.addEventListener('click', function () {
+                atualizar.disabled = true; msg(m, 'Atualizando...');
+                gerarPaginas().then(function (ok) { atualizar.disabled = false; msg(m, ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora. Tente de novo em instantes.', ok ? 'ok' : 'erro'); });
+            });
+            app.appendChild(el('div', {}, [nova, atualizar]));
+            var area = el('div', {}, [el('p', { text: 'Carregando...' })]); app.appendChild(area);
+            C.from('psicanalise_posts').select('id,titulo,publicado,publicado_em').order('criado_em', { ascending: false }).then(function (r) {
+                area.textContent = '';
+                if (r.error) { area.appendChild(el('p', { class: 'msg erro', text: erroTexto(r.error) })); return; }
+                if (!r.data.length) { area.appendChild(el('p', { text: 'Nenhuma postagem ainda.' })); return; }
+                r.data.forEach(function (p) {
+                    var editar = el('button', { type: 'button', class: 'sec', text: 'Editar' }); editar.addEventListener('click', function () { editor(p.id); });
+                    area.appendChild(el('div', { class: 'item' }, [el('div', {}, [el('strong', { text: p.titulo }), el('div', { class: 'blog-data', text: p.publicado ? 'Publicada em ' + dataBR(p.publicado_em) : 'Rascunho' })]), editar]));
+                });
+            });
+        }
+
+        function editor(id) {
+            limpar(); app.appendChild(topo());
+            var cartao = el('div', {}); app.appendChild(cartao);
+            var post = { titulo: '', resumo: '', corpo: '', imagem_url: '', video_url: '', publicado: false, publicado_em: null };
+            if (!id) montar(); else {
+                cartao.appendChild(el('p', { text: 'Carregando...' }));
+                C.from('psicanalise_posts').select('*').eq('id', id).maybeSingle().then(function (r) {
+                    if (r.error || !r.data) { lista(); return; }
+                    post = r.data; cartao.textContent = ''; montar();
+                });
+            }
+
+            function montar() {
+                cartao.appendChild(el('h2', { class: 'blog-h2', text: id ? 'Editar postagem' : 'Nova postagem' }));
+                var m = el('p', { class: 'msg' });
+                var titulo = el('input', { type: 'text', placeholder: 'Título', maxlength: '160' }); titulo.value = post.titulo || '';
+                var resumo = el('textarea', { rows: '2', placeholder: 'Resumo para o Google (opcional; se vazio, usa o começo do texto)' }); resumo.style.minHeight = '0'; resumo.value = post.resumo || '';
+                var video = el('input', { type: 'url', placeholder: 'Link do vídeo no YouTube (opcional; aparece no fim da postagem)' }); video.value = post.video_url || '';
+                var corpo = el('textarea', { placeholder: 'Escreva o texto. Uma linha em branco separa os parágrafos.' }); corpo.value = post.corpo || '';
+
+                var imagemUrl = post.imagem_url || '', imagemNova = null, imagemAntiga = post.imagem_url || '';
+                var previa = el('img', { class: 'previa', alt: '' });
+                var escolher = el('input', { type: 'file', accept: 'image/*' }); escolher.style.display = 'none';
+                var botImg = el('button', { type: 'button', class: 'sec' });
+                var botTirar = el('button', { type: 'button', class: 'perigo', text: 'Tirar a imagem' });
+                function atualizarImagem() {
+                    previa.style.display = imagemUrl ? 'block' : 'none'; if (imagemUrl) previa.src = imagemUrl;
+                    botImg.textContent = imagemUrl ? 'Trocar a imagem' : 'Escolher uma imagem';
+                    botTirar.style.display = imagemUrl ? '' : 'none';
+                }
+                botImg.addEventListener('click', function () { escolher.click(); });
+                botTirar.addEventListener('click', function () { imagemUrl = ''; imagemNova = null; atualizarImagem(); });
+                escolher.addEventListener('change', function () {
+                    var arq = escolher.files && escolher.files[0]; escolher.value = ''; if (!arq) return;
+                    msg(m, 'Preparando a imagem...');
+                    prepararImagem(arq).then(function (blob) { imagemNova = blob; imagemUrl = URL.createObjectURL(blob); atualizarImagem(); msg(m, ''); })
+                        .catch(function () { msg(m, 'Não consegui ler essa imagem. Tente outra (JPEG ou PNG).', 'erro'); });
+                });
+
+                var botSub = el('button', { type: 'button', class: 'sec', text: 'Subtítulo' });
+                botSub.addEventListener('click', function () {
+                    var t = corpo.value, ini = corpo.selectionStart, fim = corpo.selectionEnd;
+                    var comeco = t.lastIndexOf('\n', ini - 1) + 1, f = t.indexOf('\n', fim); if (f < 0) f = t.length;
+                    var trecho = t.slice(comeco, f), marcado = /^##\s/.test(trecho);
+                    var novo = marcado ? trecho.replace(/^##\s+/, '') : '## ' + trecho;
+                    corpo.value = t.slice(0, comeco) + novo + t.slice(f); corpo.focus(); corpo.selectionStart = corpo.selectionEnd = comeco + novo.length;
+                });
+
+                var botoes = el('div', {});
+                function travar(v) { Array.prototype.forEach.call(botoes.querySelectorAll('button'), function (b) { b.disabled = v; }); }
+
+                function gravar(publicar) {
+                    var t = titulo.value.trim(), c = corpo.value.trim();
+                    if (!t) { msg(m, 'Escreva o título.', 'erro'); return; }
+                    if (publicar && !c) { msg(m, 'Escreva o texto antes de publicar.', 'erro'); return; }
+                    if (video.value.trim() && !/^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\//.test(video.value.trim())) { msg(m, 'O link do vídeo precisa ser do YouTube.', 'erro'); return; }
+                    travar(true); msg(m, imagemNova ? 'Enviando a imagem...' : 'Salvando...');
+                    var enviada = null;
+                    var subir = imagemNova ? (function () {
+                        var caminho = 'psi-' + Date.now() + '.jpg';
+                        return C.storage.from('site').upload(caminho, imagemNova, { contentType: 'image/jpeg', upsert: false }).then(function (r) {
+                            if (r.error) throw r.error;
+                            enviada = caminho; imagemUrl = C.storage.from('site').getPublicUrl(caminho).data.publicUrl;
+                        });
+                    })() : Promise.resolve();
+                    subir.then(function () {
+                        var agora = new Date().toISOString();
+                        var dados = { titulo: t, resumo: resumo.value.trim() || null, video_url: video.value.trim() || null, corpo: c, imagem_url: imagemUrl || null, publicado: publicar, atualizado_em: agora };
+                        if (publicar && !post.publicado_em) dados.publicado_em = agora;
+                        if (id) return C.from('psicanalise_posts').update(dados).eq('id', id).then(function (r) { if (r.error) throw r.error; });
+                        var base = slugDe(t), tentativa = 1;
+                        function inserir() {
+                            dados.slug = tentativa === 1 ? base : base + '-' + tentativa;
+                            return C.from('psicanalise_posts').insert(dados).select('id').single().then(function (r) {
+                                if (r.error && r.error.code === '23505' && tentativa < 20) { tentativa++; return inserir(); }
+                                if (r.error) throw r.error;
+                                id = r.data.id;
+                            });
+                        }
+                        return inserir();
+                    }).then(function () {
+                        if (imagemAntiga && imagemAntiga !== imagemUrl) { var velha = caminhoDe(imagemAntiga); if (velha) C.storage.from('site').remove([velha]); }
+                        lista('Salvo. Quando terminar de mexer, toque UMA vez em "Atualizar as páginas do blog".');
+                    }).catch(function (e) {
+                        if (enviada) C.storage.from('site').remove([enviada]);
+                        travar(false); msg(m, erroTexto(e), 'erro');
+                    });
+                }
+
+                var publicar = el('button', { type: 'button', text: post.publicado ? 'Salvar alterações' : 'Publicar' }); publicar.addEventListener('click', function () { gravar(true); });
+                var rascunho = el('button', { type: 'button', class: 'sec', text: post.publicado ? 'Tirar do ar (voltar a rascunho)' : 'Salvar como rascunho' }); rascunho.addEventListener('click', function () { gravar(false); });
+                var voltar = el('button', { type: 'button', class: 'sec', text: 'Voltar' }); voltar.addEventListener('click', function () { lista(); });
+                [publicar, rascunho, voltar].forEach(function (b) { botoes.appendChild(b); });
+                if (id) {
+                    var excluir = el('button', { type: 'button', class: 'perigo', text: 'Excluir' });
+                    excluir.addEventListener('click', function () {
+                        if (!window.confirm('Excluir esta postagem de vez? Não dá para desfazer.')) return;
+                        travar(true);
+                        C.from('psicanalise_posts').delete().eq('id', id).then(function (r) {
+                            if (r.error) { travar(false); msg(m, erroTexto(r.error), 'erro'); return; }
+                            var velha = caminhoDe(imagemAntiga); if (velha) C.storage.from('site').remove([velha]);
+                            lista('Excluída. Toque em "Atualizar as páginas do blog" para tirar a página do ar.');
+                        });
+                    });
+                    botoes.appendChild(excluir);
+                }
+
+                [titulo, resumo, previa, el('div', {}, [botImg, botTirar, escolher]), el('div', {}, [botSub]), corpo, video,
+                 el('p', { class: 'blog-data', text: 'Subtítulo: clique na linha e toque em "Subtítulo". O visual (cores e fonte) é sempre o do site.' }), m, botoes
+                ].forEach(function (n) { cartao.appendChild(n); });
+                atualizarImagem();
+            }
+        }
+
+        C.auth.getSession().then(function (r) { if (r.data && r.data.session) iniciar(); else login(); });
+    })();
+    </script>
+</body>
+</html>
