@@ -119,3 +119,21 @@ h1.pagina::after {
 .texto ul { margin: 0 0 14px; padding-left: 22px; }
 .texto li { margin-bottom: 6px; }
 .texto a { color: var(--roxo); font-weight: 600; }
+.foto-perfil {
+    display: block;
+    width: 200px;
+    height: 200px;
+    margin: 8px auto 24px;
+    border-radius: 50%;
+}
+.subtitulo-centro {
+    text-align: center;
+    color: #674ea7;
+    margin: 0 0 24px;
+}
+.icone-zap {
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+    margin: 0 0.5em;
+}
