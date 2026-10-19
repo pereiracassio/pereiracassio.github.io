@@ -110,11 +110,17 @@
             });
         }
 
+        /* devolve { ok, detalhe }: o detalhe mostra o motivo de verdade quando o servidor ou a rede falham */
         function gerarPaginas() {
             return C.auth.getSession().then(function (r) {
                 var jwt = r.data && r.data.session && r.data.session.access_token;
                 return fetch(GERAR_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + jwt } });
-            }).then(function (resp) { return resp.ok; }).catch(function () { return false; });
+            }).then(function (resp) {
+                return resp.text().then(function (t) {
+                    var d = {}; try { d = JSON.parse(t); } catch (e) { /* resposta que não é JSON */ }
+                    return { ok: resp.ok, detalhe: resp.ok ? '' : 'servidor respondeu ' + resp.status + ' ' + (d.detalhe || d.erro || t.slice(0, 120)) };
+                });
+            }).catch(function (e) { return { ok: false, detalhe: 'sem resposta do servidor (' + (e && e.message ? e.message : 'rede') + ')' }; });
         }
 
         function lista(aviso) {
@@ -126,7 +132,7 @@
             var atualizar = el('button', { type: 'button', class: 'sec', text: 'Atualizar as páginas do blog' });
             atualizar.addEventListener('click', function () {
                 atualizar.disabled = true; msg(m, 'Atualizando...');
-                gerarPaginas().then(function (ok) { atualizar.disabled = false; msg(m, ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora. Tente de novo em instantes.', ok ? 'ok' : 'erro'); });
+                gerarPaginas().then(function (r) { atualizar.disabled = false; msg(m, r.ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora: ' + r.detalhe, r.ok ? 'ok' : 'erro'); });
             });
             app.appendChild(el('div', {}, [nova, atualizar]));
             var area = el('div', {}, [el('p', { text: 'Carregando...' })]); app.appendChild(area);
