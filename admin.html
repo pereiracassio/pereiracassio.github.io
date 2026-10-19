@@ -69,7 +69,11 @@
             var email = el('input', { type: 'email', id: 'em', autocomplete: 'username', required: '' });
             var senha = el('input', { type: 'password', id: 'se', autocomplete: 'current-password', required: '' });
             var entrar = el('button', { type: 'submit', text: 'Entrar' });
-            var form = el('form', {}, [el('label', { for: 'em', text: 'E-mail' }), email, el('label', { for: 'se', text: 'Senha' }), senha, m, entrar]);
+            var google = el('button', { type: 'button', class: 'sec', text: 'Entrar com o Google' });
+            google.addEventListener('click', function () {
+                C.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+            });
+            var form = el('form', {}, [google, el('p', { class: 'blog-data', text: 'ou com e-mail e senha:' }), el('label', { for: 'em', text: 'E-mail' }), email, el('label', { for: 'se', text: 'Senha' }), senha, m, entrar]);
             form.addEventListener('submit', function (ev) {
                 ev.preventDefault(); entrar.disabled = true; msg(m, 'Entrando...');
                 C.auth.signInWithPassword({ email: email.value.trim(), password: senha.value }).then(function (r) {
