@@ -97,7 +97,10 @@ h1.pagina {
     margin: 0 0 8px;
 }
 .texto h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
     font-size: clamp(20px, 3.5vw, 26px);
+    color: var(--roxo);
     text-transform: none;
     letter-spacing: 0.02em;
     margin: 32px 0 14px;
@@ -106,6 +109,7 @@ h1.pagina {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 500;
     font-size: 19px;
+    color: var(--roxo);
     margin: 28px 0 10px;
 }
 .texto p { margin: 0 0 14px; }

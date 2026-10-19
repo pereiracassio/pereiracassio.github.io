@@ -10,6 +10,7 @@ Site e blog de psicanálise em `https://pereiracassio.github.io` (GitHub Pages).
 - Ele **não vê** avisos internos do sistema (o aviso do hook de git sobre "commit sem branch remota" é um alarme falso, porque olha os outros repositórios da sessão). Não repetir esse aviso para ele.
 - SQL do Supabase e links de painéis: **sempre escritos na conversa**, para ele copiar e rodar. Ele não enxerga branches, só o que está na `main`.
 - Visual: fundo branco, cabeçalho preto, roxo (`--roxo` `#4b2a7b`) como destaque. Fontes **Fraunces** (títulos) e **Karla** (texto), escolhidas por ele (03 de quatro opções). Nada de traço/sublinhado enfeitando o título (ele detestou o que veio do Blogger).
+- **REGRA DE PADRÃO (19/10/2026): títulos E subtítulos de página/texto são sempre ROXO** (`var(--roxo)`): `h1.pagina`, `.texto h2`, `.texto h3`, `.blog-h2`. Toda página nova segue isso, sem exceção. Texto corrido fica preto.
 - O nome do projeto é "Cássio Pereira, Psicanalista Clínico". O cabeçalho do Blogger tinha uma foto e o desenho do divã ("Divã Pop"); ainda não foram trazidos (as imagens estão no Blogger e daqui não dá para baixá-las).
 
 ## Páginas
