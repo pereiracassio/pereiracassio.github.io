@@ -89,7 +89,7 @@ function casca({ titulo, descricao, url, tipo, extraHead, corpo }) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=7">
+    <link rel="stylesheet" href="/style.css?v=8">
 </head>
 <body>
 
@@ -147,7 +147,7 @@ function paginaPost(p) {
     titulo: p.titulo, descricao: resumo, url, tipo: 'article',
     extraHead: (p.imagem_url ? '\n    <meta property="og:image" content="' + esc(p.imagem_url) + '">' : '') + '\n    <script type="application/ld+json">' + ldJson + '</script>',
     corpo: `        ${slugAssunto ? '<a class="assunto-post" href="/assunto/' + slugAssunto + '.html">' + esc(assunto) + '</a>' : ''}
-        <h1 class="pagina titulo-post">${esc(p.titulo)}</h1>
+        <h1 class="pagina">${esc(p.titulo)}</h1>
         ${p.publicado_em ? '<p class="blog-data">' + esc(dataExtenso(p.publicado_em)) + '</p>' : ''}
         ${p.imagem_url ? '<img class="blog-capa" src="' + esc(p.imagem_url) + '" alt="' + esc(p.titulo) + '">' : ''}
 ${corpoHtml(p.corpo)}
