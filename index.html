@@ -3,52 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Astrológico</title>
+    <title>Cássio Pereira | Psicanalista Clínico</title>
+    <meta name="description" content="Blog e atendimento de Cássio Pereira, psicanalista clínico. Textos sobre psicanálise e informações sobre as sessões.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f8fafc; color: #0f172a; }
-        .card { background: #ffffff; padding: 16px; border: 2px solid #d4af37; border-radius: 10px; max-width: 650px; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        label { font-size: 11px; font-weight: bold; color: #103b70; display: block; margin-bottom: 2px; }
-        input, select { width: 100%; height: 36px; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 0 8px; font-size: 13px; box-sizing: border-box; }
-        button { width: 100%; height: 40px; font-weight: bold; background: #103b70; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        :root {
+            --fundo: #ffffff;
+            --texto: #1a1410;
+            --roxo: #4b2a7b;
+            --roxo-claro: #7a55b3;
+            --escuro: #16151a;
+            --linha: #d9d2e6;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--fundo);
+            color: var(--texto);
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+        header {
+            background: var(--escuro);
+            color: #ffffff;
+            text-align: center;
+            padding: 48px 16px 40px;
+        }
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: clamp(26px, 5vw, 44px);
+            letter-spacing: 0.04em;
+            margin: 0 0 8px;
+        }
+        header p {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(16px, 3vw, 24px);
+            letter-spacing: 0.06em;
+            margin: 0;
+            color: #cdbfe6;
+        }
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 28px;
+            padding: 18px 16px;
+            border-bottom: 1px solid var(--linha);
+        }
+        nav a {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--roxo);
+            text-decoration: none;
+        }
+        nav a:hover { color: var(--roxo-claro); }
+        main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 16px 64px;
+        }
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            font-size: 18px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin: 0 0 20px;
+        }
+        .postagens {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .postagem {
+            border: 1px solid var(--linha);
+            border-radius: 6px;
+            padding: 18px;
+        }
+        .postagem h3 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            font-size: 18px;
+            margin: 0;
+            color: var(--roxo);
+        }
+        footer {
+            text-align: center;
+            padding: 24px 16px 40px;
+            border-top: 1px solid var(--linha);
+            font-size: 16px;
+            color: #5b5468;
+        }
     </style>
 </head>
 <body>
 
-    <h3 style="color: #103b70;">Painel de Validação - Swiss Ephemeris</h3>
+    <header>
+        <h1>Cássio Pereira</h1>
+        <p>Psicanalista Clínico</p>
+    </header>
 
-    <form action="https://motor-astrologia.vercel.app/api/index" method="GET" class="card">
-        <div class="grid">
-            <div>
-                <label>Data de Nascimento:</label>
-                <input type="text" name="data" value="1989-10-09">
-            </div>
-            <div>
-                <label>Hora de Nascimento:</label>
-                <input type="text" name="hora" value="10:59">
-            </div>
+    <nav>
+        <a href="index.html">Página inicial</a>
+        <a href="#">Quem sou eu</a>
+        <a href="#">Sessões de psicanálise</a>
+    </nav>
+
+    <main>
+        <h2>Últimas postagens</h2>
+        <div class="postagens">
+            <article class="postagem">
+                <h3>Narcisismo não é o que você pensa</h3>
+            </article>
+            <article class="postagem">
+                <h3>Como a psicanálise pode te ajudar</h3>
+            </article>
         </div>
-        <div class="grid">
-            <div>
-                <label>Latitude (°):</label>
-                <input type="text" name="lat" value="-23.5505">
-            </div>
-            <div>
-                <label>Longitude (°):</label>
-                <input type="text" name="lon" value="-46.6333">
-            </div>
-        </div>
-        <div style="margin-bottom: 5px;">
-            <label>Fuso Horário (UTC):</label>
-            <select name="fuso">
-                <option value="-3" selected>UTC -3 (Brasil / Brasília)</option>
-                <option value="-4">UTC -4</option>
-                <option value="-5">UTC -5</option>
-                <option value="0">UTC +0</option>
-            </select>
-        </div>
-        <button type="submit">CONSULTAR SWISS EPHEMERIS</button>
-    </form>
+    </main>
+
+    <footer>
+        Cássio Pereira · Psicanalista Clínico
+    </footer>
 
 </body>
 </html>
