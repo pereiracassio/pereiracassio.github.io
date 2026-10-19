@@ -78,23 +78,44 @@
     return saida;
   }
 
-  /* cartões das últimas postagens (página inicial) */
-  function listarPostagens(container) {
-    buscar('publicado=eq.true&select=slug,titulo,resumo,corpo,imagem_url,publicado_em&order=publicado_em.desc').then(function (posts) {
+  /* endereço (slug) a partir de um texto: sem acento, minúsculo, hífens (a mesma regra do painel e do servidor) */
+  function slugDe(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/, ''); }
+
+  /* assuntos distintos (nomes que dão o mesmo endereço viram um só), em ordem alfabética */
+  function agruparAssuntos(posts) {
+    var mapa = {};
+    posts.forEach(function (p) {
+      var nome = String(p.assunto || '').trim(), slug = slugDe(nome);
+      if (slug) (mapa[slug] = mapa[slug] || { nome: nome, slug: slug, posts: [] }).posts.push(p);
+    });
+    return Object.keys(mapa).sort().map(function (k) { return mapa[k]; });
+  }
+
+  function cartao(p) {
+    return el('a', { class: 'postagem', href: 'blog/' + encodeURIComponent(p.slug) + '.html' }, [
+      p.imagem_url ? el('img', { src: p.imagem_url, alt: '', loading: 'lazy' }) : null,
+      p.publicado_em ? el('p', { class: 'blog-data', text: dataExtenso(p.publicado_em) }) : null,
+      el('h3', { text: p.titulo })
+    ]);
+  }
+
+  /* página inicial: os assuntos (links) e as últimas postagens */
+  function listarPostagens(container, containerAssuntos) {
+    buscar('publicado=eq.true&select=slug,titulo,assunto,imagem_url,publicado_em&order=publicado_em.desc').then(function (posts) {
       container.textContent = '';
       if (!posts.length) { container.appendChild(el('p', { text: 'Em breve, novos textos.' })); return; }
-      posts.forEach(function (p) {
-        container.appendChild(el('a', { class: 'postagem', href: 'blog/' + encodeURIComponent(p.slug) + '.html' }, [
-          p.imagem_url ? el('img', { src: p.imagem_url, alt: '', loading: 'lazy' }) : null,
-          p.publicado_em ? el('p', { class: 'blog-data', text: dataExtenso(p.publicado_em) }) : null,
-          el('h3', { text: p.titulo })
-        ]));
-      });
+      if (containerAssuntos) {
+        containerAssuntos.textContent = '';
+        agruparAssuntos(posts).forEach(function (a) {
+          containerAssuntos.appendChild(el('a', { class: 'assunto', href: 'assunto/' + a.slug + '.html', text: a.nome }));
+        });
+      }
+      posts.forEach(function (p) { container.appendChild(cartao(p)); });
     }).catch(function () { container.textContent = ''; container.appendChild(el('p', { text: 'Não foi possível carregar os textos agora.' })); });
   }
 
   window.blog = {
     buscar: buscar, el: el, dataExtenso: dataExtenso, renderizarCorpo: renderizarCorpo, resumoDe: resumoDe,
-    idYoutube: idYoutube, renderizarVideo: renderizarVideo, listarPostagens: listarPostagens
+    idYoutube: idYoutube, renderizarVideo: renderizarVideo, listarPostagens: listarPostagens, slugDe: slugDe, agruparAssuntos: agruparAssuntos, cartao: cartao
   };
 })();

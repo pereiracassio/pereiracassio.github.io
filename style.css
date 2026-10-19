@@ -154,3 +154,8 @@ h1.pagina::after {
 .blog-botao { display: inline-block; padding: 12px 24px; border: 1px solid var(--roxo); border-radius: 6px; color: var(--roxo); font-family: 'Cinzel', serif; font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; }
 .blog-botao:hover { background: var(--roxo); color: #ffffff; }
 .blog-voltar { display: inline-block; margin-top: 24px; color: var(--roxo); font-weight: 600; text-decoration: none; }
+
+.assuntos { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 28px; }
+.assunto { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; border: 1px solid var(--roxo); border-radius: 20px; padding: 4px 14px; }
+.assunto:hover { background: var(--roxo); color: #ffffff; }
+.assunto-post { display: block; margin: 0 0 6px; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; font-weight: 700; }

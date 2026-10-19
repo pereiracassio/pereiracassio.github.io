@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assunto | Cássio Pereira</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+
+    <header>
+        <h1>Cássio Pereira</h1>
+        <p>Psicanalista Clínico</p>
+    </header>
+
+    <nav>
+        <a href="index.html">Página inicial</a>
+        <a href="quem-sou-eu.html">Quem sou eu</a>
+        <a href="sessoes.html">Sessões de psicanálise</a>
+    </nav>
+
+    <main class="texto" id="lista"><p>Carregando...</p></main>
+
+    <footer>
+        Cássio Pereira · Psicanalista Clínico
+    </footer>
+
+    <script src="blog.js?v=2"></script>
+    <script>
+    (function () {
+        var b = window.blog, main = document.getElementById('lista');
+        var slug = new URLSearchParams(location.search).get('a') || '';
+        function naoAchei() { main.textContent = ''; main.appendChild(b.el('p', { text: 'Assunto não encontrado.' })); main.appendChild(b.el('a', { class: 'blog-voltar', href: 'index.html', text: '← Ver todos os textos' })); }
+        b.buscar('publicado=eq.true&select=slug,titulo,assunto,imagem_url,publicado_em&order=publicado_em.desc').then(function (posts) {
+            var a = b.agruparAssuntos(posts).filter(function (x) { return x.slug === slug; })[0];
+            if (!a) { naoAchei(); return; }
+            document.title = a.nome + ' | Cássio Pereira';
+            main.textContent = '';
+            main.appendChild(b.el('h1', { class: 'pagina', text: a.nome }));
+            var grade = b.el('div', { class: 'postagens' });
+            a.posts.forEach(function (p) { grade.appendChild(b.cartao(p)); });
+            main.appendChild(grade);
+            main.appendChild(b.el('a', { class: 'blog-voltar', href: 'index.html', text: '← Ver todos os textos' }));
+        }).catch(naoAchei);
+    })();
+    </script>
+</body>
+</html>

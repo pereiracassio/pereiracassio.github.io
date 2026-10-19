@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=4">
     <style>
         .painel input, .painel textarea { width: 100%; font: inherit; padding: 10px; margin: 0 0 12px; border: 1px solid var(--roxo); border-radius: 6px; background: #fff; color: var(--texto); }
         .painel textarea { min-height: 260px; }
@@ -153,6 +153,11 @@
                 cartao.appendChild(el('h2', { class: 'blog-h2', text: id ? 'Editar postagem' : 'Nova postagem' }));
                 var m = el('p', { class: 'msg' });
                 var titulo = el('input', { type: 'text', placeholder: 'Título', maxlength: '160' }); titulo.value = post.titulo || '';
+                var assunto = el('input', { type: 'text', list: 'assuntos-existentes', placeholder: 'Assunto (ex.: Narcisismo): escolha um que já existe ou escreva um novo', maxlength: '60' }); assunto.value = post.assunto || '';
+                var sugestoes = el('datalist', { id: 'assuntos-existentes' });
+                C.from('psicanalise_posts').select('assunto').not('assunto', 'is', null).then(function (r) {
+                    var vistos = {}; (r.data || []).forEach(function (x) { var n = String(x.assunto || '').trim(); if (n && !vistos[n]) { vistos[n] = 1; sugestoes.appendChild(el('option', { value: n })); } });
+                });
                 var resumo = el('textarea', { rows: '2', placeholder: 'Resumo para o Google (opcional; se vazio, usa o começo do texto)' }); resumo.style.minHeight = '0'; resumo.value = post.resumo || '';
                 var video = el('input', { type: 'url', placeholder: 'Link do vídeo no YouTube (opcional; aparece no fim da postagem)' }); video.value = post.video_url || '';
                 var corpo = el('textarea', { placeholder: 'Escreva o texto. Uma linha em branco separa os parágrafos.' }); corpo.value = post.corpo || '';
@@ -204,7 +209,7 @@
                     })() : Promise.resolve();
                     subir.then(function () {
                         var agora = new Date().toISOString();
-                        var dados = { titulo: t, resumo: resumo.value.trim() || null, video_url: video.value.trim() || null, corpo: c, imagem_url: imagemUrl || null, publicado: publicar, atualizado_em: agora };
+                        var dados = { titulo: t, assunto: assunto.value.trim() || null, resumo: resumo.value.trim() || null, video_url: video.value.trim() || null, corpo: c, imagem_url: imagemUrl || null, publicado: publicar, atualizado_em: agora };
                         if (publicar && !post.publicado_em) dados.publicado_em = agora;
                         if (id) return C.from('psicanalise_posts').update(dados).eq('id', id).then(function (r) { if (r.error) throw r.error; });
                         var base = slugDe(t), tentativa = 1;
@@ -244,7 +249,7 @@
                     botoes.appendChild(excluir);
                 }
 
-                [titulo, resumo, previa, el('div', {}, [botImg, botTirar, escolher]), el('div', {}, [botSub]), corpo, video,
+                [titulo, assunto, sugestoes, resumo, previa, el('div', {}, [botImg, botTirar, escolher]), el('div', {}, [botSub]), corpo, video,
                  el('p', { class: 'blog-data', text: 'Subtítulo: clique na linha e toque em "Subtítulo". O visual (cores e fonte) é sempre o do site.' }), m, botoes
                 ].forEach(function (n) { cartao.appendChild(n); });
                 atualizarImagem();
