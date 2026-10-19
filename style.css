@@ -151,3 +151,4 @@ h1.pagina {
 .assunto { font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; border: 1px solid var(--roxo); border-radius: 20px; padding: 4px 14px; }
 .assunto:hover { background: var(--roxo); color: #ffffff; }
 .assunto-post { display: block; margin: 0 0 6px; font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; font-weight: 700; }
+.titulo-post { color: var(--roxo); }

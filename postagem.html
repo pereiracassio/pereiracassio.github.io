@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -42,7 +42,7 @@
             main.textContent = '';
             var sa = b.slugDe(p.assunto);
             if (sa) main.appendChild(b.el('a', { class: 'assunto-post', href: '/assunto/' + sa + '.html', text: String(p.assunto).trim() }));
-            main.appendChild(b.el('h1', { class: 'pagina', text: p.titulo }));
+            main.appendChild(b.el('h1', { class: 'pagina titulo-post', text: p.titulo }));
             if (p.publicado_em) main.appendChild(b.el('p', { class: 'blog-data', text: b.dataExtenso(p.publicado_em) }));
             if (p.imagem_url) main.appendChild(b.el('img', { class: 'blog-capa', src: p.imagem_url, alt: p.titulo }));
             main.appendChild(b.renderizarCorpo(p.corpo));
