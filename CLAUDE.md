@@ -21,7 +21,7 @@ Site e blog de psicanálise em `https://pereiracassio.github.io` (GitHub Pages).
 ## Páginas
 
 - `index.html`: assuntos (links) e últimas postagens, vindos do Supabase pelo navegador (`blog.js`).
-- `quem-sou-eu.html`, `sessoes.html`: texto fixo, copiado do Blogger. A foto e o ícone do WhatsApp de `quem-sou-eu.html` ainda são carregados do endereço do Blogger (se o Blogger sair do ar, sumem: trocar por arquivos do repositório).
+- `quem-sou-eu.html`, `sessoes.html`: texto fixo, copiado do Blogger. A foto de `quem-sou-eu.html` ainda é carregada do endereço do Blogger (se o Blogger sair do ar, some: trocar por arquivo do repositório). O ícone de WhatsApp dessa página já é o roxo do repositório.
 - `style.css`: estilo de tudo. **Mexeu nele, bumpar o `?v=` em TODAS as páginas e em `api/_blog.js`** e pedir ao Cássio para tocar em "Atualizar as páginas do blog" (as páginas já geradas guardam o `?v=` antigo).
 - `blog.js` (`?v=` também): peças comuns do blog no navegador.
 - `postagem.html?p=<slug>` e `assunto.html?a=<slug>`: leitores diretos do Supabase (servem enquanto a página própria ainda não foi gerada). `404.html` redireciona `/blog/<slug>.html` e `/assunto/<slug>.html` que ainda não existem para eles.
