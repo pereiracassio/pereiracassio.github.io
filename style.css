@@ -7,17 +7,23 @@
     --linha: #d9d2e6;
 }
 * { box-sizing: border-box; }
-/* o topo do navegador (e a rolagem além do fim) fica preto, igual ao cabeçalho; só a folha do site é creme */
+/* o topo do navegador (e a rolagem além do fim) fica preto, igual ao cabeçalho: o FUNDO DA PÁGINA é preto e só as partes do site (menu, texto, rodapé) são creme.
+   O Safari do iPhone pinta a barra de cima com o fundo do body, por isso não basta o html ser preto. */
 html { background: var(--escuro); }
 body {
     margin: 0;
     min-height: 100vh;
-    background: var(--fundo);
+    display: flex;
+    flex-direction: column;
+    background: var(--escuro);
     color: var(--texto);
     font-family: 'Karla', system-ui, sans-serif;
     font-size: 18px;
     line-height: 1.65;
 }
+body > * { width: 100%; }
+body > nav, body > main, body > footer { background: var(--fundo); }
+body > main { flex: 1 0 auto; box-shadow: 0 0 0 100vmax var(--fundo); clip-path: inset(0 -100vmax); } /* o creme do texto vai de ponta a ponta, mesmo com a coluna estreita */
 header {
     background: var(--escuro);
     color: var(--fundo);
