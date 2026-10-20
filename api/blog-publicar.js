@@ -9,7 +9,7 @@ const { paginaPost, paginaAssunto, agruparAssuntos, sitemap, SITE } = require('.
 
 const SUPABASE_URL = 'https://wqkgsotfwkzjwaowenrb.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_p9Un5Po0_3kriGmSwOXIFQ_K8BCMLtt'; // a mesma chave pública que o site já usa
-const ORIGENS_PERMITIDAS = ['https://pereiracassio.github.io'];
+const ORIGENS_PERMITIDAS = ['https://pereiracassio.com.br', 'https://pereiracassio.github.io'];
 const REPO = 'pereiracassio/pereiracassio.github.io';
 const RAMO = 'main';
 

@@ -1,7 +1,7 @@
 /* Páginas do blog: transforma uma postagem do Supabase numa página HTML pronta (uma por postagem) e monta o sitemap.
    Usado por api/blog-publicar.js. O "_" no começo do nome faz a Vercel NÃO tratar este arquivo como um endpoint. */
 
-const SITE = 'https://pereiracassio.github.io';
+const SITE = 'https://pereiracassio.com.br';
 const PAGINAS_FIXAS = ['', 'quem-sou-eu.html', 'sessoes.html'];
 /* WhatsApp com a mensagem pronta: cada postagem manda o próprio título, para ele saber de qual texto a pessoa veio */
 const linkAgendar = (titulo) => 'https://wa.me/5511970404508?text=' + encodeURIComponent('Oi, Cássio! Li o texto *' + titulo + '* no seu site e quero saber como funcionam as sessões.');
