@@ -119,6 +119,72 @@
             }).catch(function (e) { return { ok: false, detalhe: 'sem resposta do servidor (' + (e && e.message ? e.message : 'rede') + ')' }; });
         }
 
+        /* ---- foto da página Quem sou eu (fica em site_config, chave psi_foto_quem_sou_eu; arquivo no bucket site) ---- */
+        function prepararFoto(arquivo) {
+            return new Promise(function (ok, erro) {
+                var url = URL.createObjectURL(arquivo), img = new Image();
+                img.onload = function () {
+                    var lado = Math.min(img.naturalWidth, img.naturalHeight), T = 720;
+                    var c = document.createElement('canvas'); c.width = c.height = T;
+                    var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, T, T);
+                    g.drawImage(img, (img.naturalWidth - lado) / 2, (img.naturalHeight - lado) / 2, lado, lado, 0, 0, T, T);
+                    URL.revokeObjectURL(url);
+                    c.toBlob(function (blob) { blob ? ok(blob) : erro(new Error('foto')); }, 'image/jpeg', 0.9);
+                };
+                img.onerror = function () { URL.revokeObjectURL(url); erro(new Error('foto')); };
+                img.src = url;
+            });
+        }
+
+        function fotoQuemSouEu() {
+            limpar(); app.appendChild(topo());
+            app.appendChild(el('h2', { class: 'blog-h2', text: 'Foto da página Quem sou eu' }));
+            var foto = el('img', { alt: 'Foto atual' });
+            foto.style.cssText = 'display:none;width:200px;height:200px;border-radius:50%;object-fit:cover;margin:0 auto 16px;border:1px solid var(--roxo)';
+            var m = el('p', { class: 'msg' });
+            var botoes = el('div', {});
+            var atual = null;
+            C.from('site_config').select('valor').eq('chave', 'psi_foto_quem_sou_eu').maybeSingle().then(function (r) {
+                if (r.data && r.data.valor) { atual = r.data.valor; foto.src = atual; foto.style.display = 'block'; }
+                else msg(m, 'Hoje a página usa a foto antiga. Escolha uma nova para trocar.');
+            });
+            var escolher = el('input', { type: 'file', accept: 'image/*' }); escolher.style.display = 'none';
+            var bEscolher = el('button', { type: 'button', text: 'Escolher uma foto nova' });
+            var bVoltar = el('button', { type: 'button', class: 'sec', text: 'Voltar' }); bVoltar.addEventListener('click', function () { lista(); });
+            bEscolher.addEventListener('click', function () { escolher.click(); });
+            botoes.appendChild(bEscolher); botoes.appendChild(bVoltar); botoes.appendChild(escolher);
+            escolher.addEventListener('change', function () {
+                var arq = escolher.files && escolher.files[0]; escolher.value = '';
+                if (!arq) return;
+                msg(m, 'Preparando a foto...');
+                prepararFoto(arq).then(function (blob) {
+                    var previa = URL.createObjectURL(blob); foto.src = previa; foto.style.display = 'block';
+                    botoes.textContent = '';
+                    var usar = el('button', { type: 'button', text: 'Usar esta foto' });
+                    var cancelar = el('button', { type: 'button', class: 'sec', text: 'Cancelar' });
+                    cancelar.addEventListener('click', function () { URL.revokeObjectURL(previa); fotoQuemSouEu(); });
+                    usar.addEventListener('click', function () {
+                        usar.disabled = cancelar.disabled = true; msg(m, 'Enviando...');
+                        var caminho = 'psi-foto-' + Date.now() + '.jpg';
+                        C.storage.from('site').upload(caminho, blob, { contentType: 'image/jpeg', upsert: false }).then(function (r) {
+                            if (r.error) throw r.error;
+                            var url = C.storage.from('site').getPublicUrl(caminho).data.publicUrl;
+                            return C.from('site_config').upsert({ chave: 'psi_foto_quem_sou_eu', valor: url, atualizado_em: new Date().toISOString() }, { onConflict: 'chave' }).then(function (r2) {
+                                if (r2.error) throw r2.error;
+                                var velha = caminhoDe(atual); if (velha) C.storage.from('site').remove([velha]);
+                                URL.revokeObjectURL(previa);
+                                fotoQuemSouEu(); msg(document.querySelector('.msg'), 'Foto trocada! Já aparece na página Quem sou eu.', 'ok');
+                            });
+                        }).catch(function (e) { usar.disabled = cancelar.disabled = false; msg(m, erroTexto(e), 'erro'); });
+                    });
+                    botoes.appendChild(usar); botoes.appendChild(cancelar);
+                    msg(m, 'É assim que vai ficar. Se gostou, toque em "Usar esta foto".');
+                }).catch(function () { msg(m, 'Não consegui ler essa imagem. Tente outra (JPEG ou PNG).', 'erro'); });
+            });
+            app.appendChild(foto); app.appendChild(m); app.appendChild(botoes);
+            app.appendChild(el('p', { class: 'blog-data', text: 'A foto é cortada em quadrado, pelo centro, e aparece redonda. Escolha uma em que o rosto fique no meio.' }));
+        }
+
         function lista(aviso) {
             limpar(); app.appendChild(topo());
             app.appendChild(el('h2', { class: 'blog-h2', text: 'Postagens' }));
@@ -130,7 +196,8 @@
                 atualizar.disabled = true; msg(m, 'Atualizando...');
                 gerarPaginas().then(function (r) { atualizar.disabled = false; msg(m, r.ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora: ' + r.detalhe, r.ok ? 'ok' : 'erro'); });
             });
-            app.appendChild(el('div', {}, [nova, atualizar]));
+            var fotoBtn = el('button', { type: 'button', class: 'sec', text: 'Trocar a foto do Quem sou eu' }); fotoBtn.addEventListener('click', fotoQuemSouEu);
+            app.appendChild(el('div', {}, [nova, atualizar, fotoBtn]));
             var area = el('div', {}, [el('p', { text: 'Carregando...' })]); app.appendChild(area);
             C.from('psicanalise_posts').select('id,titulo,publicado,publicado_em').order('criado_em', { ascending: false }).then(function (r) {
                 area.textContent = '';

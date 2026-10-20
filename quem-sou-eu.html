@@ -32,7 +32,22 @@
     <main class="texto">
         <h1 class="pagina">Quem sou eu</h1>
 
-        <img class="foto-perfil" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgg22L2yf7kab8-oSd05vLgACK1mZ9G9WnHp6de23-QCxu-Jy2ffqcfEdEhucNb0xSVlHIaXaytqsKsQnP0b_g4Jqws6iBKw1L0qY4rSVfPDXjj1dOA6NmftDwO_TqiHJs9lbccr2A-BnhOvmgzXRi5AXIVTYCeml7HOZs96xIfB5b_0Ty34qn9KxRUpKA/w200-h200/Photoroom_20260804_081914.png" alt="Cássio Pereira" width="200" height="200">
+        <img class="foto-perfil" id="foto-perfil" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgg22L2yf7kab8-oSd05vLgACK1mZ9G9WnHp6de23-QCxu-Jy2ffqcfEdEhucNb0xSVlHIaXaytqsKsQnP0b_g4Jqws6iBKw1L0qY4rSVfPDXjj1dOA6NmftDwO_TqiHJs9lbccr2A-BnhOvmgzXRi5AXIVTYCeml7HOZs96xIfB5b_0Ty34qn9KxRUpKA/w200-h200/Photoroom_20260804_081914.png" alt="Cássio Pereira" width="200" height="200">
+        <script>
+        /* a foto pode ser trocada no painel (Trocar a foto do Quem sou eu); a do Blogger é só a reserva se o endereço novo não vier */
+        (function () {
+            var img = document.getElementById('foto-perfil');
+            try { var guardada = localStorage.getItem('psi_foto_quem_sou_eu'); if (guardada) img.src = guardada; } catch (e) { /* sem armazenamento */ }
+            fetch('https://wqkgsotfwkzjwaowenrb.supabase.co/rest/v1/site_config?chave=eq.psi_foto_quem_sou_eu&select=valor', { headers: { apikey: 'sb_publishable_p9Un5Po0_3kriGmSwOXIFQ_K8BCMLtt' } })
+                .then(function (r) { return r.ok ? r.json() : []; })
+                .then(function (l) {
+                    var url = l && l[0] && l[0].valor;
+                    if (!url) return;
+                    if (img.getAttribute('src') !== url) img.src = url;
+                    try { localStorage.setItem('psi_foto_quem_sou_eu', url); } catch (e) { /* sem armazenamento */ }
+                }).catch(function () { /* fica a foto de reserva */ });
+        })();
+        </script>
         <p class="subtitulo-centro">Quem sou eu</p>
 
         <p>Meu nome é <strong>Cássio Pereira</strong>, tenho formação em psicanálise pela F3V e dedico minha prática clínica ao acompanhamento e à escuta do sofrimento psíquico em suas diversas manifestações.</p>
