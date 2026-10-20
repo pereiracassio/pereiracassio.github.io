@@ -22,7 +22,8 @@ body {
     line-height: 1.65;
 }
 body > * { width: 100%; }
-body > nav, body > main, body > footer { background: var(--fundo); }
+body > main { background: var(--fundo); }
+body > nav, body > footer { background: var(--escuro); }
 body > main { flex: 1 0 auto; box-shadow: 0 0 0 100vmax var(--fundo); clip-path: inset(0 -100vmax); } /* o creme do texto vai de ponta a ponta, mesmo com a coluna estreita */
 header {
     background: var(--escuro);
@@ -58,7 +59,7 @@ nav a {
     font-weight: 600;
     font-size: 16px;
     letter-spacing: 0.02em;
-    color: var(--roxo);
+    color: var(--fundo);
     text-decoration: none;
 }
 nav a:hover { color: var(--roxo-claro); }
@@ -97,7 +98,7 @@ footer {
     padding: 24px 16px 40px;
     border-top: 1px solid var(--linha);
     font-size: 16px;
-    color: #5b5468;
+    color: var(--fundo);
 }
 h1.pagina {
     color: var(--roxo);
