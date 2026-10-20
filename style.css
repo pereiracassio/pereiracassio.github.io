@@ -20,7 +20,7 @@ body {
 }
 header {
     background: var(--escuro);
-    color: #ffffff;
+    color: var(--fundo);
     text-align: center;
     padding: 48px 16px 40px;
 }
@@ -153,12 +153,12 @@ h1.pagina {
 .blog-link { display: inline-block; color: var(--roxo); font-weight: 600; }
 .blog-fim { margin: 36px 0 8px; padding-top: 24px; text-align: center; border-top: 1px solid var(--linha); }
 .blog-botao { display: inline-block; padding: 12px 24px; border: 1px solid var(--roxo); border-radius: 6px; color: var(--roxo); font-family: 'Karla', system-ui, sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; }
-.blog-botao:hover { background: var(--roxo); color: #ffffff; }
+.blog-botao:hover { background: var(--roxo); color: var(--fundo); }
 .blog-voltar { display: inline-block; margin-top: 24px; color: var(--roxo); font-weight: 600; text-decoration: none; }
 
 .assuntos { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 28px; }
 .assunto { font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; border: 1px solid var(--roxo); border-radius: 20px; padding: 4px 14px; }
-.assunto:hover { background: var(--roxo); color: #ffffff; }
+.assunto:hover { background: var(--roxo); color: var(--fundo); }
 .assunto-post { display: block; margin: 0 0 6px; font-family: 'Karla', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--roxo); text-decoration: none; font-weight: 700; }
 
 /* Logo do canal no cabeçalho: centralizado no celular, no canto esquerdo em tela larga */
@@ -193,5 +193,5 @@ header.compacto .logo-cab { position: absolute; left: max(16px, calc((100% - 110
 
 .bio-botoes { display: grid; gap: 12px; margin: 26px 0 0; }
 .bio-botoes .blog-botao { display: block; text-align: center; }
-.blog-botao.cheio { background: var(--roxo); color: #ffffff; }
+.blog-botao.cheio { background: var(--roxo); color: var(--fundo); }
 .blog-botao.cheio:hover { background: var(--roxo-claro); border-color: var(--roxo-claro); }
