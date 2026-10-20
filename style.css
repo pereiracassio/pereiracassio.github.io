@@ -186,3 +186,8 @@ header.compacto .logo-cab { position: absolute; left: max(16px, calc((100% - 110
 .bio-botao { text-align: center; margin: 28px 0 0; }
 .bio-blog { text-align: center; margin: 22px 0 0; }
 .bio-blog a { color: var(--roxo); font-weight: 600; }
+
+.bio-botoes { display: grid; gap: 12px; margin: 26px 0 0; }
+.bio-botoes .blog-botao { display: block; text-align: center; }
+.blog-botao.cheio { background: var(--roxo); color: #ffffff; }
+.blog-botao.cheio:hover { background: var(--roxo-claro); border-color: var(--roxo-claro); }
