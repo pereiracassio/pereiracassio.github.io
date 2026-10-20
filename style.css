@@ -173,3 +173,16 @@ header.compacto .logo-cab { position: absolute; left: max(16px, calc((100% - 110
 @media (min-width: 860px) {
     header.compacto .logo-cab { width: 96px; }
 }
+
+/* Redes sociais no rodapé de todas as páginas */
+.redes { display: flex; justify-content: center; gap: 22px; margin: 0 0 16px; }
+.redes img { display: block; width: 32px; height: 32px; }
+.redes a:hover img { opacity: .7; }
+/* Página do link da bio */
+.bio { max-width: 600px; }
+.bio .redes { margin: 8px 0 26px; }
+.bio .redes img { width: 44px; height: 44px; }
+.bio h1.pagina { text-align: center; }
+.bio-botao { text-align: center; margin: 28px 0 0; }
+.bio-blog { text-align: center; margin: 22px 0 0; }
+.bio-blog a { color: var(--roxo); font-weight: 600; }
