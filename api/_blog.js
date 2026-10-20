@@ -99,7 +99,7 @@ function casca({ titulo, descricao, url, tipo, extraHead, corpo }) {
 <body>
 
     <header class="compacto">
-        <a class="logo-cab" href="/index.html"><img src="/logo-diva-pop-creme.svg?v=1" alt="Divã Pop" width="170" height="119"></a>
+        <a class="logo-cab" href="/index.html"><img src="/logo-diva-pop-creme.svg?v=2" alt="Divã Pop" width="170" height="88"></a>
         <h1><a href="/index.html">Cássio Pereira</a></h1>
         <p>Psicanalista Clínico</p>
     </header>
