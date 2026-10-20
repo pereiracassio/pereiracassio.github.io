@@ -58,7 +58,7 @@
             if (p.imagem_url) main.appendChild(b.el('img', { class: 'blog-capa', src: p.imagem_url, alt: p.titulo }));
             main.appendChild(b.renderizarCorpo(p.corpo));
             main.appendChild(b.renderizarVideo(p.video_url));
-            main.appendChild(b.el('div', { class: 'blog-fim' }, [b.el('a', { class: 'blog-botao', href: 'sessoes.html', text: 'Sessões de psicanálise' })]));
+            main.appendChild(b.el('div', { class: 'blog-fim' }, [b.el('a', { class: 'blog-botao cheio', href: 'https://wa.me/5511970404508?text=' + encodeURIComponent('Oi, Cássio! Li o texto *' + p.titulo + '* no seu site e quero saber como funcionam as sessões.'), target: '_blank', rel: 'noopener', text: 'Agendar uma sessão' })]));
             main.appendChild(b.el('a', { class: 'blog-voltar', href: 'index.html', text: '← Ver todos os textos' }));
         }).catch(naoAchei);
     })();

@@ -3,7 +3,8 @@
 
 const SITE = 'https://pereiracassio.github.io';
 const PAGINAS_FIXAS = ['', 'quem-sou-eu.html', 'sessoes.html'];
-const LINK_AGENDAR = 'https://wa.me/message/M73L2KE2I4OYB1';
+/* WhatsApp com a mensagem pronta: cada postagem manda o próprio título, para ele saber de qual texto a pessoa veio */
+const linkAgendar = (titulo) => 'https://wa.me/5511970404508?text=' + encodeURIComponent('Oi, Cássio! Li o texto *' + titulo + '* no seu site e quero saber como funcionam as sessões.');
 
 const esc = (t) => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
@@ -163,7 +164,7 @@ function paginaPost(p) {
         ${p.imagem_url ? '<img class="blog-capa" src="' + esc(p.imagem_url) + '" alt="' + esc(p.titulo) + '">' : ''}
 ${corpoHtml(p.corpo)}
 ${videoHtml(p.video_url)}
-        <div class="blog-fim"><a class="blog-botao" href="${LINK_AGENDAR}" target="_blank" rel="noopener">Agendar uma sessão</a></div>
+        <div class="blog-fim"><a class="blog-botao cheio" href="${esc(linkAgendar(p.titulo))}" target="_blank" rel="noopener">Agendar uma sessão</a></div>
         <a class="blog-voltar" href="${slugAssunto ? '/assunto/' + slugAssunto + '.html' : '/index.html'}">← ${slugAssunto ? 'Mais textos de ' + esc(assunto) : 'Ver todos os textos'}</a>`
   });
 }
