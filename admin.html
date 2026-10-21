@@ -44,6 +44,8 @@
         var SUPABASE_KEY = 'sb_publishable_p9Un5Po0_3kriGmSwOXIFQ_K8BCMLtt';
         /* servidor que gera as páginas das postagens (Vercel) */
         var GERAR_URL = 'https://pereiracassiogithubio.vercel.app/api/blog-publicar';
+        /* visitas: lidas pelo servidor do Falando de Astrologia (o token do GoatCounter fica lá, na Vercel) */
+        var VISITAS_URL = 'https://falandodeastrologia.vercel.app/api/visitas';
         var LARGURA = 1600;
         var C = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         var app = document.getElementById('app');
@@ -197,7 +199,8 @@
                 gerarPaginas().then(function (r) { atualizar.disabled = false; msg(m, r.ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora: ' + r.detalhe, r.ok ? 'ok' : 'erro'); });
             });
             var fotoBtn = el('button', { type: 'button', class: 'sec', text: 'Trocar a foto do Quem sou eu' }); fotoBtn.addEventListener('click', fotoQuemSouEu);
-            app.appendChild(el('div', {}, [nova, atualizar, fotoBtn]));
+            var visitasBtn = el('button', { type: 'button', class: 'sec', text: 'Visitas' }); visitasBtn.addEventListener('click', function () { visitas(7); });
+            app.appendChild(el('div', {}, [nova, atualizar, fotoBtn, visitasBtn]));
             var area = el('div', {}, [el('p', { text: 'Carregando...' })]); app.appendChild(area);
             C.from('psicanalise_posts').select('id,titulo,publicado,publicado_em').order('criado_em', { ascending: false }).then(function (r) {
                 area.textContent = '';
@@ -208,6 +211,35 @@
                     area.appendChild(el('div', { class: 'item' }, [el('div', {}, [el('strong', { text: p.titulo }), el('div', { class: 'blog-data', text: p.publicado ? 'Publicada em ' + dataBR(p.publicado_em) : 'Rascunho' })]), editar]));
                 });
             });
+        }
+
+        function visitas(dias) {
+            limpar(); app.appendChild(topo());
+            app.appendChild(el('h2', { class: 'blog-h2', text: 'Visitas do site' }));
+            var voltar = el('button', { type: 'button', class: 'sec', text: 'Voltar às postagens' }); voltar.addEventListener('click', function () { lista(); });
+            var botoes = [[7, 'Últimos 7 dias'], [30, 'Últimos 30 dias'], [90, 'Últimos 90 dias']].map(function (p) {
+                var b = el('button', { type: 'button', class: 'sec', text: p[1] });
+                if (p[0] === dias) b.style.borderWidth = '3px';
+                b.addEventListener('click', function () { visitas(p[0]); });
+                return b;
+            });
+            app.appendChild(el('div', {}, [voltar].concat(botoes)));
+            var m = el('p', { class: 'msg' }); app.appendChild(m);
+            var area = el('div', {}); app.appendChild(area);
+            msg(m, 'Carregando...');
+            C.auth.getSession().then(function (r) {
+                var jwt = r.data && r.data.session && r.data.session.access_token;
+                return fetch(VISITAS_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' }, body: JSON.stringify({ site: 'pereiracassio', dias: dias }) });
+            }).then(function (resp) {
+                return resp.json().then(function (d) { if (!resp.ok) throw new Error(d.detalhe || d.erro || String(resp.status)); return d; });
+            }).then(function (d) {
+                msg(m, '');
+                area.appendChild(el('p', { style: 'font-size:2.2em;margin:.4em 0 0;color:var(--roxo)', text: String(d.visitas) }));
+                area.appendChild(el('p', { text: d.visitas === 1 ? 'visita no período' : 'visitas no período' }));
+                area.appendChild(el('h3', { class: 'blog-h2', text: 'Páginas mais vistas' }));
+                if (!d.paginas.length) { area.appendChild(el('p', { text: 'Ainda não há visitas neste período.' })); return; }
+                d.paginas.forEach(function (p) { area.appendChild(el('p', { text: p.visitas + '  ·  ' + (p.titulo || p.caminho) })); });
+            }).catch(function (e) { msg(m, 'Não consegui ler as visitas agora. ' + (e.message || ''), 'erro'); });
         }
 
         function editor(id) {
