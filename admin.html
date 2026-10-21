@@ -68,7 +68,7 @@
         function sair() { C.auth.signOut().then(login); }
         function topo() {
             var b = el('button', { type: 'button', class: 'sec', text: 'Sair' }); b.addEventListener('click', sair);
-            return el('div', {}, [b, el('a', { href: 'index.html', text: 'Ver o site' })]);
+            return el('div', {}, [b, el('a', { href: 'index.html', text: 'Ver o site' }), el('a', { href: 'https://falandodeastrologia.com.br/admin-blog.html', text: 'Astrologia', style: 'margin-left:16px' })]);
         }
 
         function login() {
