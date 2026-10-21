@@ -236,6 +236,17 @@
                 msg(m, '');
                 area.appendChild(el('p', { style: 'font-size:2.2em;margin:.4em 0 0;color:var(--roxo)', text: String(d.visitas) }));
                 area.appendChild(el('p', { text: d.visitas === 1 ? 'visita no período' : 'visitas no período' }));
+                if (dias === 1) {
+                    area.appendChild(el('h3', { class: 'blog-h2', text: 'Por hora' }));
+                    var achou = false;
+                    d.porDia.forEach(function (dia) {
+                        var dd = String(dia.dia).slice(8, 10) + '/' + String(dia.dia).slice(5, 7);
+                        (dia.horas || []).forEach(function (n, h) {
+                            if (n > 0) { achou = true; area.appendChild(el('p', { text: dd + ' às ' + h + 'h  ·  ' + n + (n === 1 ? ' visita' : ' visitas') })); }
+                        });
+                    });
+                    if (!achou) area.appendChild(el('p', { text: 'Nenhuma visita nas últimas 24 horas.' }));
+                }
                 area.appendChild(el('h3', { class: 'blog-h2', text: 'Páginas mais vistas' }));
                 if (!d.paginas.length) { area.appendChild(el('p', { text: 'Ainda não há visitas neste período.' })); return; }
                 d.paginas.forEach(function (p) { area.appendChild(el('p', { text: p.visitas + '  ·  ' + (p.titulo || p.caminho) })); });
