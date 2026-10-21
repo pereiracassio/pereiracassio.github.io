@@ -199,7 +199,7 @@
                 gerarPaginas().then(function (r) { atualizar.disabled = false; msg(m, r.ok ? 'Pronto! As páginas foram atualizadas.' : 'Não consegui atualizar agora: ' + r.detalhe, r.ok ? 'ok' : 'erro'); });
             });
             var fotoBtn = el('button', { type: 'button', class: 'sec', text: 'Trocar a foto do Quem sou eu' }); fotoBtn.addEventListener('click', fotoQuemSouEu);
-            var visitasBtn = el('button', { type: 'button', class: 'sec', text: 'Visitas' }); visitasBtn.addEventListener('click', function () { visitas(7); });
+            var visitasBtn = el('button', { type: 'button', class: 'sec', text: 'Visitas' }); visitasBtn.addEventListener('click', function () { visitas(1); });
             app.appendChild(el('div', {}, [nova, atualizar, fotoBtn, visitasBtn]));
             var area = el('div', {}, [el('p', { text: 'Carregando...' })]); app.appendChild(area);
             C.from('psicanalise_posts').select('id,titulo,publicado,publicado_em').order('criado_em', { ascending: false }).then(function (r) {
