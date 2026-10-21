@@ -217,7 +217,7 @@
             limpar(); app.appendChild(topo());
             app.appendChild(el('h2', { class: 'blog-h2', text: 'Visitas do site' }));
             var voltar = el('button', { type: 'button', class: 'sec', text: 'Voltar às postagens' }); voltar.addEventListener('click', function () { lista(); });
-            var botoes = [[7, 'Últimos 7 dias'], [30, 'Últimos 30 dias'], [90, 'Últimos 90 dias']].map(function (p) {
+            var botoes = [[1, 'Últimas 24 horas'], [7, 'Últimos 7 dias'], [30, 'Últimos 30 dias'], [90, 'Últimos 90 dias']].map(function (p) {
                 var b = el('button', { type: 'button', class: 'sec', text: p[1] });
                 if (p[0] === dias) b.style.borderWidth = '3px';
                 b.addEventListener('click', function () { visitas(p[0]); });
@@ -229,7 +229,7 @@
             msg(m, 'Carregando...');
             C.auth.getSession().then(function (r) {
                 var jwt = r.data && r.data.session && r.data.session.access_token;
-                return fetch(VISITAS_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' }, body: JSON.stringify({ site: 'pereiracassio', dias: dias }) });
+                return fetch(VISITAS_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + jwt, 'Content-Type': 'application/json' }, body: JSON.stringify(dias === 1 ? { site: 'pereiracassio', horas: 24 } : { site: 'pereiracassio', dias: dias }) });
             }).then(function (resp) {
                 return resp.json().then(function (d) { if (!resp.ok) throw new Error(d.detalhe || d.erro || String(resp.status)); return d; });
             }).then(function (d) {
