@@ -88,6 +88,8 @@
       var nome = String(p.assunto || '').trim(), slug = slugDe(nome);
       if (slug) (mapa[slug] = mapa[slug] || { nome: nome, slug: slug, posts: [] }).posts.push(p);
     });
+    /* dentro do assunto, da mais antiga (a abertura) para a mais nova */
+    Object.keys(mapa).forEach(function (k) { mapa[k].posts.sort(function (x, y) { return String(x.publicado_em || '').localeCompare(String(y.publicado_em || '')); }); });
     return Object.keys(mapa).sort().map(function (k) { return mapa[k]; });
   }
 
@@ -99,18 +101,20 @@
     ]);
   }
 
-  /* página inicial: os assuntos (links) e as últimas postagens */
-  function listarPostagens(container, containerAssuntos) {
+  /* página inicial: um cartão por assunto (capa = a postagem mais antiga, a abertura); depois as postagens sem assunto */
+  function listarPostagens(container) {
     buscar('publicado=eq.true&select=slug,titulo,assunto,imagem_url,publicado_em&order=publicado_em.desc').then(function (posts) {
       container.textContent = '';
       if (!posts.length) { container.appendChild(el('p', { text: 'Em breve, novos textos.' })); return; }
-      if (containerAssuntos) {
-        containerAssuntos.textContent = '';
-        agruparAssuntos(posts).forEach(function (a) {
-          containerAssuntos.appendChild(el('a', { class: 'assunto', href: 'assunto/' + a.slug + '.html', text: a.nome }));
-        });
-      }
-      posts.forEach(function (p) { container.appendChild(cartao(p)); });
+      agruparAssuntos(posts).forEach(function (a) {
+        var capa = a.posts.filter(function (p) { return p.imagem_url; })[0];
+        container.appendChild(el('a', { class: 'postagem', href: 'assunto/' + a.slug + '.html' }, [
+          capa ? el('img', { src: capa.imagem_url, alt: '', loading: 'lazy' }) : null,
+          el('h3', { text: a.nome }),
+          el('p', { class: 'blog-data', text: a.posts.length === 1 ? '1 texto' : a.posts.length + ' textos' })
+        ]));
+      });
+      posts.filter(function (p) { return !slugDe(String(p.assunto || '').trim()); }).forEach(function (p) { container.appendChild(cartao(p)); });
     }).catch(function () { container.textContent = ''; container.appendChild(el('p', { text: 'Não foi possível carregar os textos agora.' })); });
   }
 
