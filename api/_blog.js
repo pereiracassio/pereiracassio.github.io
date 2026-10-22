@@ -10,14 +10,38 @@ const esc = (t) => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 const dataExtenso = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.getUTCDate() + ' de ' + MESES[d.getUTCMonth()] + ' de ' + d.getUTCFullYear(); };
 
+/* ligações automáticas: as palavras cadastradas em cada postagem ("Palavras que levam a este texto") viram link, TODA vez que aparecem nas outras postagens */
+const chaveFrase = (t) => String(t || '').trim().replace(/\s+/g, ' ').toLowerCase();
+function montarLigacoes(posts, atual) {
+  const mapa = {};
+  (posts || []).forEach((q) => {
+    if (!q.slug || q.slug === atual) return;
+    String(q.palavras_link || '').split(/[,;\n]/).forEach((f) => { const k = chaveFrase(f); if (k && !mapa[k]) mapa[k] = q.slug; });
+  });
+  const chaves = Object.keys(mapa).sort((a, b) => b.length - a.length);
+  if (!chaves.length) return null;
+  const alt = chaves.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+')).join('|');
+  return { mapa, re: new RegExp('(^|[^\\p{L}\\p{N}])(' + alt + ')(?![\\p{L}\\p{N}])', 'giu') };
+}
+function textoComLinks(linha, lig) {
+  if (!lig) return esc(linha);
+  let saida = '', ult = 0;
+  linha.replace(lig.re, (m, pre, fr, off) => {
+    const ini = off + pre.length;
+    saida += esc(linha.slice(ult, ini)) + '<a class="blog-link-interno" href="/blog/' + lig.mapa[chaveFrase(fr)] + '.html">' + esc(fr) + '</a>';
+    ult = ini + fr.length; return m;
+  });
+  return saida + esc(linha.slice(ult));
+}
+
 /* mesmas regras do blog.js do navegador: parágrafos separados por linha em branco, "## " no começo da linha = subtítulo */
-function corpoHtml(corpo) {
+function corpoHtml(corpo, lig) {
   const saida = [];
   String(corpo || '').replace(/\r\n?/g, '\n').split(/\n{2,}/).forEach((bloco) => {
     bloco = bloco.trim();
     if (!bloco) return;
     let paragrafo = [];
-    const fechar = () => { if (paragrafo.length) { saida.push('<p class="blog-p">' + paragrafo.map(esc).join('<br>') + '</p>'); paragrafo = []; } };
+    const fechar = () => { if (paragrafo.length) { saida.push('<p class="blog-p">' + paragrafo.map((l) => textoComLinks(l, lig)).join('<br>') + '</p>'); paragrafo = []; } };
     bloco.split('\n').forEach((l) => {
       const m = /^##\s+(.+)$/.exec(l.trim());
       if (m) { fechar(); saida.push('<h2 class="blog-h2">' + esc(m[1]) + '</h2>'); }
@@ -97,7 +121,7 @@ function casca({ titulo, descricao, url, tipo, extraHead, corpo }) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=20">
+    <link rel="stylesheet" href="/style.css?v=21">
 <script data-goatcounter="https://pereiracassio.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
@@ -149,7 +173,7 @@ ${cartoes}
   });
 }
 
-function paginaPost(p) {
+function paginaPost(p, todos) {
   const url = enderecoPost(p.slug), resumo = resumoDe(p);
   const ld = {
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.titulo, description: resumo,
@@ -166,7 +190,7 @@ function paginaPost(p) {
         <h1 class="pagina">${esc(p.titulo)}</h1>
         ${p.publicado_em ? '<p class="blog-data">' + esc(dataExtenso(p.publicado_em)) + '</p>' : ''}
         ${p.imagem_url ? '<img class="blog-capa" src="' + esc(p.imagem_url) + '" alt="' + esc(p.titulo) + '">' : ''}
-${corpoHtml(p.corpo)}
+${corpoHtml(p.corpo, montarLigacoes(todos, p.slug))}
 ${videoHtml(p.video_url)}
         <div class="blog-fim"><a class="blog-botao cheio" href="${esc(linkAgendar(p.titulo))}" target="_blank" rel="noopener">Agendar uma sessão</a></div>
         <a class="blog-voltar" href="${slugAssunto ? '/assunto/' + slugAssunto + '.html' : '/index.html'}">← ${slugAssunto ? 'Mais textos de ' + esc(assunto) : 'Ver todos os textos'}</a>`
