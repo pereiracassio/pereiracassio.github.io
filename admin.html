@@ -88,6 +88,8 @@
                 if (r.error || r.data !== true) {
                     app.appendChild(topo()); app.appendChild(el('p', { text: 'Este e-mail não tem acesso ao painel.' })); return;
                 }
+                /* não contar as visitas de quem administra: o contador (GoatCounter) ignora o aparelho que tem skipgc = 't'; vale para o site todo neste navegador */
+                try { localStorage.setItem('skipgc', 't'); } catch (e) { /* sem armazenamento */ }
                 lista();
             });
         }
