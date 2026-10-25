@@ -60,3 +60,32 @@ Servir a pasta com `python3 -m http.server`, abrir no Chromium (Playwright) inte
 - **FEITO (21/10/2026), tudo do domínio novo:** Redirect URL `https://pereiracassio.com.br/admin.html` adicionada no Supabase; "Enforce HTTPS" ligado no GitHub Pages; link da bio do Instagram trocado para `https://pereiracassio.com.br/bio.html`; Search Console do domínio (propriedade de DOMÍNIO, verificada por registro `TXT` no DNS do Registro.br — **não apagar esse `TXT`**) e `https://pereiracassio.com.br/sitemap.xml` enviado (7 páginas, "Processado"). Nada mais pendente do domínio.
 - Histórico do passo-a-passo antigo (antes de ligar): DNS primeiro, só depois o `CNAME` (se for antes, o `github.io` redireciona para um endereço que não abre e o site cai).
 - Capa do WhatsApp Business: o quadro de recorte tem proporção ~5:2 (por exemplo 1500 × 600 px). Fonte do título "Fraunces" Bold e do texto "Karla".
+
+## PROJETO FUTURO: fichas dos pacientes (combinado em 25/10/2026, ainda NÃO começou)
+
+**Objetivo:** dentro do painel de psicanálise (`admin.html`), uma tela de **pacientes** com ficha (contato, datas das sessões, materiais) e **ficha de anamnese** que o paciente preenche em casa por um link, antes da primeira sessão. Hoje o Cássio tem uma paciente só de psicanálise (já teve mais, sempre poucos), trabalha com psicanálise desde 2025, ainda não divulgou muito, e sonha em fazer faculdade de Psicologia lá na frente. **Ele NÃO tem ficha de anamnese hoje**: o Claude propõe os campos e ele corta/acrescenta antes de usar. Projeto longo, feito em várias conversas: **atualizar esta seção a cada etapa concluída**.
+
+**Decisões já tomadas (não rediscutir):**
+- **As anotações das sessões NÃO vão para o site.** Ele escreve à mão no GoodNotes depois de cada consulta (um caderno por paciente, numa pasta), para fixar na memória; o GoodNotes escreve muito melhor que qualquer quadro de site. O site só guarda **ficha, contato, datas das sessões, materiais e anamnese**.
+- **Supabase SEPARADO, só da psicanálise.** O blog de psicanálise (`psicanalise_posts`) continua no Supabase do Falando de Astrologia, sem mudar nada. As fichas vão para um **projeto Supabase novo e grátis**. Motivo: a chave de serviço (`SUPABASE_SERVICE_ROLE_KEY`) que o servidor do Falando de Astrologia guarda na Vercel lê o projeto inteiro e ignora as regras de acesso; dado de saúde não pode ficar ao alcance dela. As regras de quem vê o quê (RLS) protegem de outras pessoas, não desse servidor.
+- **Tela própria** (ex.: `pacientes.html`, noindex), com login do Google do próprio Cássio (mesmo e-mail), só ele entra. O painel de psicanálise já existente (`admin.html`, blog) não muda.
+- Paciente nunca vê nada além do próprio link da anamnese (link com chave própria, que expira ou só serve uma vez). Nenhum paciente tem conta nem lista.
+- Tudo o que ele mexer em tela de painel segue o estilo do site de psicanálise (creme, preto, roxo; ver o começo deste arquivo), não o papiro.
+
+**Rascunho da anamnese (ele ainda precisa aprovar; texto acolhedor, sem "diagnóstico", sem tom de exigência):**
+1. Aviso curto no começo: os dados ficam só com o Cássio, para quê servem, e o consentimento (LGPD) com um "li e concordo".
+2. Dados: nome, nascimento, estado civil, profissão, contato, contato de pessoa de confiança para emergência.
+3. O que traz a pessoa à análise agora (texto livre) e o que espera do processo.
+4. Já fez terapia/análise antes? Como foi? Acompanhamento psiquiátrico ou uso de medicação (o quê)?
+5. Saúde e rotina: sono, alimentação, atividade física, álcool e outras substâncias, trabalho.
+6. Família e relações: com quem mora, relações importantes, perdas ou mudanças recentes.
+7. Combinados: horário, faltas e remarcação, valor e forma de pagamento (o valor já está em `sessoes.html`; manter igual).
+
+**Etapas (marcar [x] ao concluir):**
+- [ ] 1. Cássio cria o projeto novo no Supabase (nome sugerido: `psicanalise`) e ativa o login com Google (mesmo cliente OAuth do outro projeto, só acrescentando o endereço de retorno do projeto novo). SQL sempre escrito na conversa.
+- [ ] 2. Aprovar os campos da anamnese (o Claude propõe, ele corta e acrescenta).
+- [ ] 3. Tabelas: `pacientes`, `sessoes` (data, observação curta, nada clínico), `anamneses` (respostas + `enviada_em`) e `links_anamnese` (chave, expiração, uso único). RLS só do administrador; `grant` explícito para `authenticated` e para a função pública do link.
+- [ ] 4. Tela `pacientes.html`: lista, cadastro, ficha, botão "Enviar anamnese" (gera o link e abre o WhatsApp com a mensagem pronta).
+- [ ] 5. Página pública `anamnese.html?c=<chave>` (paciente preenche, rascunho no aparelho, envia).
+- [ ] 6. Teste real dele com uma paciente de verdade (ou com ele mesmo) e ajustes.
+- [ ] 7. Depois, se ele pedir: materiais por paciente (PDFs, links) e lembrete das sessões.
